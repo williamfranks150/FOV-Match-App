@@ -7,8 +7,8 @@
 
 <style>
   :root{
-    --bg:#0b0b0b;
-    --card:#141414;
+    --bg:#050505;
+    --card:#111111;
     --border:#262626;
     --text:#ffffff;
     --muted:#9a9a9a;
@@ -16,114 +16,161 @@
     --buttonText:#000000;
   }
   *{box-sizing:border-box}
+
+  html, body{
+    height:100%;
+  }
+
   body{
-    margin:0; padding:16px;
+    margin:0;
+    padding:16px;
     font-family:system-ui,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial;
-    background:var(--bg); color:var(--text);
-    max-width:820px; margin-inline:auto;
+    background:var(--bg);
+    color:var(--text);
   }
+
+  .app{
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    max-width:900px;
+    margin:0 auto;
+  }
+
   h1{
-    font-size:28px;
-    letter-spacing:.5px;
-    margin:0 0 14px;
+    font-size:34px;
+    letter-spacing:1px;
+    margin:8px 0 20px;
   }
+
   .card{
     background:var(--card);
     border:1px solid var(--border);
-    border-radius:16px;
-    padding:16px;
-    margin-bottom:16px;
+    border-radius:22px;
+    padding:22px;
+    margin-bottom:18px;
   }
+
   .grid{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:14px;
+    gap:18px;
   }
+
   label{
     display:block;
-    font-size:12px;
-    letter-spacing:.8px;
+    font-size:13px;
+    letter-spacing:1px;
     color:var(--muted);
-    margin-bottom:6px;
+    margin-bottom:8px;
   }
+
   input{
     width:100%;
-    padding:14px 12px;
-    font-size:17px;
+    padding:20px 16px;
+    font-size:26px;
+    font-weight:600;
     color:var(--text);
-    background:#0f0f0f;
-    border:1px solid var(--border);
-    border-radius:12px;
+    background:#0b0b0b;
+    border:2px solid var(--border);
+    border-radius:16px;
     outline:none;
   }
-  input::placeholder{color:#666;}
-  input:focus{border-color:#fff;}
-  input.solvedTarget{
-    border:2px solid #fff;
-    font-weight:700;
+
+  input::placeholder{
+    font-size:18px;
+    font-weight:400;
+    color:#666;
   }
+
+  input:focus{
+    border-color:#ffffff;
+  }
+
+  input.solvedTarget{
+    border-color:#ffffff;
+    font-weight:800;
+  }
+
   button{
     width:100%;
-    margin-top:16px;
-    padding:16px;
-    font-size:17px;
-    font-weight:800;
-    letter-spacing:1px;
-    border-radius:14px;
+    margin-top:22px;
+    padding:22px;
+    font-size:22px;
+    font-weight:900;
+    letter-spacing:1.5px;
+    border-radius:20px;
     border:none;
     background:var(--button);
     color:var(--buttonText);
     cursor:pointer;
   }
-  button:active{transform:scale(.99);}
+
+  button:active{
+    transform:scale(.985);
+  }
+
+  .resultCard{
+    margin-top:auto;
+  }
+
   .out{
-    font-size:18px;
-    font-weight:700;
+    font-size:26px;
+    font-weight:900;
   }
+
   .muted{
-    margin-top:6px;
-    font-size:13px;
+    margin-top:10px;
+    font-size:15px;
     color:var(--muted);
+    letter-spacing:.5px;
   }
+
   .bold{font-weight:900;}
 </style>
 </head>
 
 <body>
+<div class="app">
 
-<h1>FOV MATCH APP</h1>
+  <div>
+    <h1>FOV MATCH APP</h1>
 
-<div class="card">
-  <div class="grid">
-    <div>
-      <label>A LENS (mm)</label>
-      <input id="aLens" type="number" step="0.1" min="0.1" placeholder="e.g. 36">
-    </div>
+    <div class="card">
+      <div class="grid">
+        <div>
+          <label>A LENS (mm)</label>
+          <input id="aLens" type="number" step="1" min="1" placeholder="36">
+        </div>
 
-    <div>
-      <label>B LENS (mm)</label>
-      <input id="bLens" type="number" step="0.1" min="0.1" placeholder="e.g. 29">
-    </div>
+        <div>
+          <label>B LENS (mm)</label>
+          <input id="bLens" type="number" step="1" min="1" placeholder="110">
+        </div>
 
-    <div>
-      <label>A DISTANCE</label>
-      <input id="aDist" placeholder="6’7” | 6’ 7” | 6 feet 7 | 79in">
-    </div>
+        <div>
+          <label>A DISTANCE</label>
+          <input id="aDist" placeholder="6’7”">
+        </div>
 
-    <div>
-      <label>B DISTANCE</label>
-      <input id="bDist" placeholder="leave blank to solve">
+        <div>
+          <label>B DISTANCE</label>
+          <input id="bDist" placeholder="leave blank">
+        </div>
+      </div>
+
+      <button id="calcBtn">CALCULATE</button>
     </div>
   </div>
 
-  <button id="calcBtn">CALCULATE</button>
-</div>
-
-<div class="card">
-  <div class="out" id="result">—</div>
-  <div class="muted" id="detail">
-    Enter any 3 fields, leave 1 blank, press CALCULATE.
+  <div class="card resultCard">
+    <div class="out" id="result">—</div>
+    <div class="muted" id="detail">
+      Enter any 3 fields, leave 1 blank, press CALCULATE.
+    </div>
   </div>
+
 </div>
 
 <script>
@@ -146,28 +193,19 @@
 
     let m;
     if (m = s.match(/^(\d+(?:\.\d+)?)\s*(in|")$/)) return +m[1];
-
-    if (m = s.match(/^(\d+(?:\.\d+)?)\s*(ft|')\s*(\d+(?:\.\d+)?)?/)){
+    if (m = s.match(/^(\d+(?:\.\d+)?)\s*(ft|')\s*(\d+(?:\.\d+)?)?/))
       return (+m[1] * 12) + (m[3] ? +m[3] : 0);
-    }
-
-    if (m = s.match(/^(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)$/)){
+    if (m = s.match(/^(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)$/))
       return (+m[1] * 12) + (+m[2]);
-    }
-
     if (m = s.match(/^(\d+(?:\.\d+)?)$/)) return +m[1];
 
     return NaN;
   }
 
-  // DISTANCE: always round UP to whole inches
   function inchesToFeetInString(totalInches){
-    if (!(totalInches >= 0)) return "";
-
     const roundedUp = Math.ceil(totalInches);
     const ft = Math.floor(roundedUp / 12);
     const inch = roundedUp % 12;
-
     return `${ft}’${inch}”`;
   }
 
@@ -186,7 +224,6 @@
 
   function solve(){
     clearSolved();
-
     normalizeDistanceField('aDist');
     normalizeDistanceField('bDist');
 
@@ -202,12 +239,7 @@
       isBlank(bD) ? 'bDist' : null
     ].filter(Boolean);
 
-    if (blanks.length !== 1){
-      el('result').textContent = "—";
-      el('detail').textContent =
-        "Enter any 3 fields, leave 1 blank, press CALCULATE.";
-      return;
-    }
+    if (blanks.length !== 1) return;
 
     const A = parseFloat(aL);
     const B = parseFloat(bL);
@@ -215,37 +247,36 @@
     const bIn = parseDistanceToInches(bD);
     const t = blanks[0];
 
-    if (t === 'bDist' && aIn > 0 && A > 0 && B > 0){
+    if (t === 'bDist'){
       const v = inchesToFeetInString(aIn * (B / A));
       el('bDist').value = v;
       el('bDist').classList.add('solvedTarget');
       el('result').innerHTML = `B DISTANCE = <span class="bold">${v}</span>`;
-      el('detail').textContent = "B = A × (B LENS ÷ A LENS)";
+      el('detail').textContent = "B DISTANCE = A DISTANCE × (B LENS ÷ A LENS)";
     }
 
-    if (t === 'aDist' && bIn > 0 && A > 0 && B > 0){
+    if (t === 'aDist'){
       const v = inchesToFeetInString(bIn * (A / B));
       el('aDist').value = v;
       el('aDist').classList.add('solvedTarget');
       el('result').innerHTML = `A DISTANCE = <span class="bold">${v}</span>`;
-      el('detail').textContent = "A = B × (A LENS ÷ B LENS)";
+      el('detail').textContent = "A DISTANCE = B DISTANCE × (A LENS ÷ B LENS)";
     }
 
-    // LENS: always round UP to whole mm
-    if (t === 'bLens' && aIn > 0 && bIn > 0 && A > 0){
+    if (t === 'bLens'){
       const v = Math.ceil(A * (bIn / aIn));
       el('bLens').value = v;
       el('bLens').classList.add('solvedTarget');
       el('result').innerHTML = `B LENS = <span class="bold">${v} mm</span>`;
-      el('detail').textContent = "B = A × (B DISTANCE ÷ A DISTANCE)";
+      el('detail').textContent = "B LENS = A LENS × (B DISTANCE ÷ A DISTANCE)";
     }
 
-    if (t === 'aLens' && aIn > 0 && bIn > 0 && B > 0){
+    if (t === 'aLens'){
       const v = Math.ceil(B * (aIn / bIn));
       el('aLens').value = v;
       el('aLens').classList.add('solvedTarget');
       el('result').innerHTML = `A LENS = <span class="bold">${v} mm</span>`;
-      el('detail').textContent = "A = B × (A DISTANCE ÷ B DISTANCE)";
+      el('detail').textContent = "A LENS = B LENS × (A DISTANCE ÷ B DISTANCE)";
     }
   }
 
