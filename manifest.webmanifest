@@ -1,0 +1,10 @@
+{
+  "name": "FOV MATCH APP",
+  "short_name": "FOV MATCH",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": []
+}
