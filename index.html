@@ -117,10 +117,8 @@
       .replace(/[“”″]/g,'"')     // inch marks
       .replace(/feet/g,"ft")
       .replace(/foot/g,"ft")
-      .replace(/\bft\.\b/g,"ft")
       .replace(/inches/g,"in")
       .replace(/inch/g,"in")
-      .replace(/\bin\.\b/g,"in")
       .trim()
       .toLowerCase();
   }
@@ -128,16 +126,13 @@
   // Accepts: 6’7” | 6’ 7” | 6'7" | 6 ft 7 in | 6 feet 7 | 6ft7in | 6 7 | 79in | 79"
   function parseDistanceToInches(raw){
     if (isBlank(raw)) return NaN;
-    let s = normalizeQuotes(raw);
-
-    // remove extra spaces around symbols/words for easier matching
-    s = s.replace(/\s+/g,' ');
+    let s = normalizeQuotes(raw).replace(/\s+/g,' ');
 
     // 79in / 79"
     let m = s.match(/^(\d+(?:\.\d+)?)\s*(in|")$/);
     if (m) return Number(m[1]);
 
-    // 6ft 7in (in optional)
+    // 6ft 7in OR 6'7"
     m = s.match(/^(\d+(?:\.\d+)?)\s*(ft|')\s*(\d+(?:\.\d+)?)?\s*(in|")?$/);
     if (m){
       const ft = Number(m[1]);
@@ -145,7 +140,7 @@
       return ft*12 + inch;
     }
 
-    // 6 ft 7 in (with spaces)
+    // 6 ft 7 in (with spaces, "in" optional)
     m = s.match(/^(\d+(?:\.\d+)?)\s*ft\s*(\d+(?:\.\d+)?)?\s*(in)?$/);
     if (m){
       const ft = Number(m[1]);
@@ -164,20 +159,15 @@
     return NaN;
   }
 
+  // OUTPUT: whole inches only, always X’Y”
   function inchesToFeetInString(totalInches){
     if (!(totalInches >= 0)) return "";
-    const ft = Math.floor(totalInches / 12);
-    let inch = totalInches - ft*12;
 
-    // nearest 1/8"
-    inch = Math.round(inch * 8) / 8;
+    const rounded = Math.round(totalInches); // whole inches
+    const ft = Math.floor(rounded / 12);
+    const inch = rounded % 12;
 
-    // carry
-    if (inch >= 12) return `${ft+1}’0”`;
-
-    // clean decimals (already 1/8)
-    const inchStr = inch.toFixed(3).replace(/\.?0+$/,'');
-    return `${ft}’${inchStr}”`;
+    return `${ft}’${inch}”`;
   }
 
   function clearSolved(){
@@ -195,7 +185,7 @@
   function solveOnButton(){
     clearSolved();
 
-    // Always show distances in feet+inches for any filled distance fields
+    // keep typed distances standardized (feet + whole inches) when CALCULATE is pressed
     normalizeDistanceField('aDist');
     normalizeDistanceField('bDist');
 
@@ -224,7 +214,6 @@
     const aIn = parseDistanceToInches(aD);
     const bIn = parseDistanceToInches(bD);
 
-    // bDist = aDist * (B/A)
     if (target === 'bDist'){
       if (!(aIn > 0) || !(A > 0) || !(B > 0)) return;
       const solved = aIn * (B / A);
@@ -236,7 +225,6 @@
       return;
     }
 
-    // aDist = bDist * (A/B)
     if (target === 'aDist'){
       if (!(bIn > 0) || !(A > 0) || !(B > 0)) return;
       const solved = bIn * (A / B);
@@ -248,7 +236,6 @@
       return;
     }
 
-    // bLens = aLens * (bDist/aDist)
     if (target === 'bLens'){
       if (!(aIn > 0) || !(bIn > 0) || !(A > 0)) return;
       const solved = A * (bIn / aIn);
@@ -260,7 +247,6 @@
       return;
     }
 
-    // aLens = bLens * (aDist/bDist)
     if (target === 'aLens'){
       if (!(aIn > 0) || !(bIn > 0) || !(B > 0)) return;
       const solved = B * (aIn / bIn);
