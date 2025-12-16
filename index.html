@@ -2,16 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="viewport"
+  content="width=device-width,
+           initial-scale=1,
+           viewport-fit=cover" />
 <title>FOV MATCH APP</title>
 
-<!-- PWA -->
-<link rel="manifest" href="manifest.webmanifest">
+<!-- PWA meta -->
 <meta name="theme-color" content="#050505">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FOV MATCH">
-<link rel="apple-touch-icon" href="icon-192.png">
 
 <style>
   :root{
@@ -23,40 +24,57 @@
     --button:#ffffff;
     --buttonText:#000000;
   }
+
   *{box-sizing:border-box}
-  html, body{height:100%}
+
+  html, body{
+    height:100%;
+  }
+
   body{
     margin:0;
-    padding:16px;
-    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial;
     background:var(--bg);
     color:var(--text);
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial;
+
+    /* SAFE AREA PADDING */
+    padding-top: max(24px, env(safe-area-inset-top));
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
+
   .app{
     min-height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
     max-width:900px;
     margin:0 auto;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:24px;
   }
+
   h1{
+    text-align:center;
     font-size:34px;
     letter-spacing:1px;
-    margin:8px 0 20px;
+    margin:0;
   }
+
   .card{
     background:var(--card);
     border:1px solid var(--border);
     border-radius:22px;
     padding:22px;
-    margin-bottom:18px;
   }
+
   .grid{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:18px;
   }
+
   label{
     display:block;
     font-size:13px;
@@ -64,6 +82,7 @@
     color:var(--muted);
     margin-bottom:8px;
   }
+
   input{
     width:100%;
     padding:20px 16px;
@@ -75,13 +94,22 @@
     border-radius:16px;
     outline:none;
   }
+
   input::placeholder{
     font-size:18px;
-    font-weight:400;
     color:#666;
+    font-weight:400;
   }
-  input:focus{border-color:#ffffff}
-  input.solvedTarget{border-color:#ffffff; font-weight:800}
+
+  input:focus{
+    border-color:#fff;
+  }
+
+  input.solvedTarget{
+    border-color:#fff;
+    font-weight:800;
+  }
+
   button{
     width:100%;
     margin-top:22px;
@@ -93,12 +121,24 @@
     border:none;
     background:var(--button);
     color:var(--buttonText);
-    cursor:pointer;
   }
-  button:active{transform:scale(.985)}
-  .resultCard{margin-top:auto}
-  .out{font-size:26px; font-weight:900}
-  .muted{margin-top:10px; font-size:15px; color:var(--muted); letter-spacing:.5px}
+
+  button:active{
+    transform:scale(.985);
+  }
+
+  .out{
+    font-size:26px;
+    font-weight:900;
+  }
+
+  .muted{
+    margin-top:10px;
+    font-size:15px;
+    color:var(--muted);
+    letter-spacing:.5px;
+  }
+
   .bold{font-weight:900}
 </style>
 </head>
@@ -106,49 +146,44 @@
 <body>
 <div class="app">
 
-  <div>
-    <h1>FOV MATCH APP</h1>
+  <h1>FOV MATCH APP</h1>
 
-    <div class="card">
-      <div class="grid">
-        <div>
-          <label>A LENS (mm)</label>
-          <input id="aLens" type="number" step="1" min="1" placeholder="36">
-        </div>
-
-        <div>
-          <label>B LENS (mm)</label>
-          <input id="bLens" type="number" step="1" min="1" placeholder="110">
-        </div>
-
-        <div>
-          <label>A DISTANCE</label>
-          <input id="aDist" placeholder="6’7”">
-        </div>
-
-        <div>
-          <label>B DISTANCE</label>
-          <input id="bDist" placeholder="leave blank">
-        </div>
+  <div class="card">
+    <div class="grid">
+      <div>
+        <label>A LENS (mm)</label>
+        <input id="aLens" type="number" step="1" min="1" placeholder="36">
       </div>
 
-      <button id="calcBtn">CALCULATE</button>
+      <div>
+        <label>B LENS (mm)</label>
+        <input id="bLens" type="number" step="1" min="1" placeholder="110">
+      </div>
+
+      <div>
+        <label>A DISTANCE</label>
+        <input id="aDist" placeholder="6’7”">
+      </div>
+
+      <div>
+        <label>B DISTANCE</label>
+        <input id="bDist" placeholder="leave blank">
+      </div>
     </div>
+
+    <button id="calcBtn">CALCULATE</button>
   </div>
 
-  <div class="card resultCard">
+  <div class="card">
     <div class="out" id="result">—</div>
-    <div class="muted" id="detail">Enter any 3 fields, leave 1 blank, press CALCULATE.</div>
+    <div class="muted" id="detail">
+      Enter any 3 fields, leave 1 blank, press CALCULATE.
+    </div>
   </div>
 
 </div>
 
 <script>
-  // PWA offline support
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
-  }
-
   const el = id => document.getElementById(id);
   const isBlank = s => s === null || s === undefined || String(s).trim() === "";
 
@@ -177,7 +212,6 @@
     return NaN;
   }
 
-  // DISTANCE: round UP to whole inches
   function inchesToFeetInString(totalInches){
     const roundedUp = Math.ceil(totalInches);
     const ft = Math.floor(roundedUp / 12);
@@ -186,7 +220,8 @@
   }
 
   function clearSolved(){
-    ['aDist','bDist','aLens','bLens'].forEach(id => el(id).classList.remove('solvedTarget'));
+    ['aDist','bDist','aLens','bLens']
+      .forEach(id => el(id).classList.remove('solvedTarget'));
   }
 
   function normalizeDistanceField(id){
@@ -227,7 +262,8 @@
       el('bDist').value = v;
       el('bDist').classList.add('solvedTarget');
       el('result').innerHTML = `B DISTANCE = <span class="bold">${v}</span>`;
-      el('detail').textContent = "B DISTANCE = A DISTANCE × (B LENS ÷ A LENS)";
+      el('detail').textContent =
+        "B DISTANCE = A DISTANCE × (B LENS ÷ A LENS)";
     }
 
     if (t === 'aDist'){
@@ -235,16 +271,17 @@
       el('aDist').value = v;
       el('aDist').classList.add('solvedTarget');
       el('result').innerHTML = `A DISTANCE = <span class="bold">${v}</span>`;
-      el('detail').textContent = "A DISTANCE = B DISTANCE × (A LENS ÷ B LENS)";
+      el('detail').textContent =
+        "A DISTANCE = B DISTANCE × (A LENS ÷ B LENS)";
     }
 
-    // LENS: round UP to whole mm
     if (t === 'bLens'){
       const v = Math.ceil(A * (bIn / aIn));
       el('bLens').value = v;
       el('bLens').classList.add('solvedTarget');
       el('result').innerHTML = `B LENS = <span class="bold">${v} mm</span>`;
-      el('detail').textContent = "B LENS = A LENS × (B DISTANCE ÷ A DISTANCE)";
+      el('detail').textContent =
+        "B LENS = A LENS × (B DISTANCE ÷ A DISTANCE)";
     }
 
     if (t === 'aLens'){
@@ -252,7 +289,8 @@
       el('aLens').value = v;
       el('aLens').classList.add('solvedTarget');
       el('result').innerHTML = `A LENS = <span class="bold">${v} mm</span>`;
-      el('detail').textContent = "A LENS = B LENS × (A DISTANCE ÷ B DISTANCE)";
+      el('detail').textContent =
+        "A LENS = B LENS × (A DISTANCE ÷ B DISTANCE)";
     }
   }
 
