@@ -1,319 +1,129 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport"
-  content="width=device-width,
-           initial-scale=1,
-           viewport-fit=cover" />
-<title>FOV MATCH APP</title>
-
-<meta name="theme-color" content="#050505">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="FOV MATCH">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>FOV Match</title>
 
 <style>
-  :root{
-    --bg:#050505;
-    --card:#111111;
-    --border:#262626;
-    --text:#ffffff;
-    --muted:#9a9a9a;
-    --button:#ffffff;
-    --buttonText:#000000;
+  body {
+    margin: 0;
+    background: #000;
+    color: #fff;
+    font-family: -apple-system, system-ui, sans-serif;
   }
-
-  *{box-sizing:border-box}
-
-  html, body{height:100%}
-
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial;
-
-    padding-top:max(24px, env(safe-area-inset-top));
-    padding-bottom:max(24px, env(safe-area-inset-bottom));
-    padding-left:env(safe-area-inset-left);
-    padding-right:env(safe-area-inset-right));
+  .wrap {
+    padding: 16px;
+    max-width: 420px;
+    margin: 0 auto;
   }
-
-  .app{
-    min-height:100%;
-    max-width:900px;
-    margin:0 auto;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    gap:24px;
+  h1 {
+    font-size: 18px;
+    margin: 0 0 12px 0;
+    text-align: center;
   }
-
-  h1{
-    text-align:center;
-    font-size:34px;
-    letter-spacing:1px;
-    margin:0;
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0;
   }
-
-  .card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:22px;
-    padding:22px;
+  button {
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 10px 14px;
+    font-size: 16px;
   }
-
-  .grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:18px;
+  .value {
+    font-size: 22px;
+    font-weight: 600;
   }
-
-  label{
-    display:block;
-    font-size:13px;
-    letter-spacing:1px;
-    color:var(--muted);
-    margin-bottom:8px;
+  .note {
+    opacity: 0.6;
+    font-size: 13px;
+    margin-top: 16px;
+    text-align: center;
   }
-
-  input{
-    width:100%;
-    padding:20px 16px;
-    font-size:26px;
-    font-weight:600;
-    color:var(--text);
-    background:#0b0b0b;
-    border:2px solid var(--border);
-    border-radius:16px;
-    outline:none;
-  }
-
-  input::placeholder{
-    font-size:18px;
-    color:#666;
-    font-weight:400;
-  }
-
-  input:focus{border-color:#fff}
-
-  input.solvedTarget{
-    border-color:#fff;
-    font-weight:800;
-  }
-
-  button{
-    width:100%;
-    margin-top:22px;
-    padding:22px;
-    font-size:22px;
-    font-weight:900;
-    letter-spacing:1.5px;
-    border-radius:20px;
-    border:none;
-    background:var(--button);
-    color:var(--buttonText);
-  }
-
-  button:active{transform:scale(.985)}
-
-  .out{
-    font-size:26px;
-    font-weight:900;
-  }
-
-  .muted{
-    margin-top:10px;
-    font-size:15px;
-    color:var(--muted);
-    letter-spacing:.5px;
-  }
-
-  .reset{
-    margin-top:14px;
-    text-align:center;
-    font-size:14px;
-    font-weight:400;
-    letter-spacing:1px;
-    color:#ffffff;
-    opacity:.7;
-    cursor:pointer;
-    user-select:none;
-  }
-
-  .reset:active{
-    opacity:1;
-  }
-
-  .bold{font-weight:900}
 </style>
 </head>
 
 <body>
-<div class="app">
+<div class="wrap">
+  <h1>FOV MATCH</h1>
 
-  <h1>FOV MATCH APP</h1>
-
-  <div class="card">
-    <div class="grid">
-      <div>
-        <label>A LENS (mm)</label>
-        <input id="aLens" type="number" step="1" min="1" placeholder="36">
-      </div>
-
-      <div>
-        <label>B LENS (mm)</label>
-        <input id="bLens" type="number" step="1" min="1" placeholder="110">
-      </div>
-
-      <div>
-        <label>A DISTANCE</label>
-        <input id="aDist" placeholder="6’7”">
-      </div>
-
-      <div>
-        <label>B DISTANCE</label>
-        <input id="bDist" placeholder="leave blank">
-      </div>
-    </div>
-
-    <button id="calcBtn">CALCULATE</button>
+  <div class="row">
+    <button id="prev">◀︎</button>
+    <div class="value" id="lensLabel"></div>
+    <button id="next">▶︎</button>
   </div>
 
-  <div class="card">
-    <div class="out" id="result">—</div>
-    <div class="muted" id="detail">
-      Enter any 3 fields, leave 1 blank, press CALCULATE.
-    </div>
-    <div class="reset" id="resetBtn">RESET</div>
+  <div class="row">
+    <span>2× Extender</span>
+    <button id="extender">OFF</button>
   </div>
 
+  <div class="row">
+    <span>Effective Focal</span>
+    <span class="value" id="effective"></span>
+  </div>
+
+  <div class="note">
+    Alexa 35 • 4.6K 16:9 • 2.00:1 safe
+  </div>
 </div>
 
 <script>
-  const el = id => document.getElementById(id);
-  const isBlank = s => s === null || s === undefined || String(s).trim() === "";
+/* ---------- DATA ---------- */
+const sensorWidthMm = 28.0; // Alexa 35
+const lenses = [
+  18,22,26,29,36,42,52,58,72,88,110
+];
 
-  function normalizeInput(s){
-    return String(s)
-      .replace(/[’′]/g,"'")
-      .replace(/[“”″]/g,'"')
-      .replace(/feet|foot/g,"ft")
-      .replace(/inches|inch/g,"in")
-      .toLowerCase()
-      .trim();
-  }
+let index = 0;
+let extenderOn = false;
 
-  function parseDistanceToInches(raw){
-    if (isBlank(raw)) return NaN;
-    let s = normalizeInput(raw).replace(/\s+/g," ");
+/* ---------- HELPERS ---------- */
+function effectiveFocal() {
+  return lenses[index] * (extenderOn ? 2 : 1);
+}
 
-    let m;
-    if (m = s.match(/^(\d+(?:\.\d+)?)\s*(in|")$/)) return +m[1];
-    if (m = s.match(/^(\d+(?:\.\d+)?)\s*(ft|')\s*(\d+(?:\.\d+)?)?/))
-      return (+m[1] * 12) + (m[3] ? +m[3] : 0);
-    if (m = s.match(/^(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)$/))
-      return (+m[1] * 12) + (+m[2]);
-    if (m = s.match(/^(\d+(?:\.\d+)?)$/)) return +m[1];
+function hfovDeg(f) {
+  return 2 * Math.atan(sensorWidthMm / (2 * f)) * 180 / Math.PI;
+}
 
-    return NaN;
-  }
+/* ---------- UI ---------- */
+function render() {
+  document.getElementById("lensLabel").textContent =
+    lenses[index] + "mm";
+  document.getElementById("extender").textContent =
+    extenderOn ? "ON" : "OFF";
+  document.getElementById("effective").textContent =
+    effectiveFocal().toFixed(0) + "mm";
+}
 
-  function inchesToFeetInString(totalInches){
-    const roundedUp = Math.ceil(totalInches);
-    const ft = Math.floor(roundedUp / 12);
-    const inch = roundedUp % 12;
-    return `${ft}’${inch}”`;
-  }
+document.getElementById("prev").onclick = () => {
+  index = (index - 1 + lenses.length) % lenses.length;
+  render();
+};
 
-  function clearSolved(){
-    ['aDist','bDist','aLens','bLens']
-      .forEach(id => el(id).classList.remove('solvedTarget'));
-  }
+document.getElementById("next").onclick = () => {
+  index = (index + 1) % lenses.length;
+  render();
+};
 
-  function normalizeDistanceField(id){
-    const v = el(id).value;
-    if (isBlank(v)) return;
-    const inches = parseDistanceToInches(v);
-    if (!(inches > 0)) return;
-    el(id).value = inchesToFeetInString(inches);
-  }
+document.getElementById("extender").onclick = () => {
+  extenderOn = !extenderOn;
+  render();
+};
 
-  function solve(){
-    clearSolved();
-    normalizeDistanceField('aDist');
-    normalizeDistanceField('bDist');
+render();
 
-    const aD = el('aDist').value;
-    const bD = el('bDist').value;
-    const aL = el('aLens').value;
-    const bL = el('bLens').value;
-
-    const blanks = [
-      isBlank(aL) ? 'aLens' : null,
-      isBlank(bL) ? 'bLens' : null,
-      isBlank(aD) ? 'aDist' : null,
-      isBlank(bD) ? 'bDist' : null
-    ].filter(Boolean);
-
-    if (blanks.length !== 1) return;
-
-    const A = parseFloat(aL);
-    const B = parseFloat(bL);
-    const aIn = parseDistanceToInches(aD);
-    const bIn = parseDistanceToInches(bD);
-    const t = blanks[0];
-
-    if (t === 'bDist'){
-      const v = inchesToFeetInString(aIn * (B / A));
-      el('bDist').value = v;
-      el('bDist').classList.add('solvedTarget');
-      el('result').innerHTML = `B DISTANCE = <span class="bold">${v}</span>`;
-      el('detail').textContent =
-        "B DISTANCE = A DISTANCE × (B LENS ÷ A LENS)";
-    }
-
-    if (t === 'aDist'){
-      const v = inchesToFeetInString(bIn * (A / B));
-      el('aDist').value = v;
-      el('aDist').classList.add('solvedTarget');
-      el('result').innerHTML = `A DISTANCE = <span class="bold">${v}</span>`;
-      el('detail').textContent =
-        "A DISTANCE = B DISTANCE × (A LENS ÷ B LENS)";
-    }
-
-    if (t === 'bLens'){
-      const v = Math.ceil(A * (bIn / aIn));
-      el('bLens').value = v;
-      el('bLens').classList.add('solvedTarget');
-      el('result').innerHTML = `B LENS = <span class="bold">${v} mm</span>`;
-      el('detail').textContent =
-        "B LENS = A LENS × (B DISTANCE ÷ A DISTANCE)";
-    }
-
-    if (t === 'aLens'){
-      const v = Math.ceil(B * (aIn / bIn));
-      el('aLens').value = v;
-      el('aLens').classList.add('solvedTarget');
-      el('result').innerHTML = `A LENS = <span class="bold">${v} mm</span>`;
-      el('detail').textContent =
-        "A LENS = B LENS × (A DISTANCE ÷ B DISTANCE)";
-    }
-  }
-
-  function resetAll(){
-    ['aLens','bLens','aDist','bDist']
-      .forEach(id => el(id).value = "");
-    clearSolved();
-    el('result').textContent = "—";
-    el('detail').textContent =
-      "Enter any 3 fields, leave 1 blank, press CALCULATE.";
-  }
-
-  el('calcBtn').addEventListener('click', solve);
-  el('resetBtn').addEventListener('click', resetAll);
+/* ---------- SERVICE WORKER ---------- */
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js");
+}
 </script>
-
 </body>
 </html>
